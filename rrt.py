@@ -11,8 +11,9 @@ import random
 
 import matplotlib.pyplot as plt
 import numpy as np
+from timeit import default_timer as timer
 
-show_animation = True
+show_animation = False
 
 
 class RRT:
@@ -33,7 +34,7 @@ class RRT:
             self.parent = None
 
     def __init__(self, start, goal, obstacle_list, rand_area,
-                 expand_dis=3.0, path_resolution=0.5, goal_sample_rate=5, max_iter=500):
+                 expand_dis=3.0, path_resolution=2.75, goal_sample_rate=5, max_iter=1000):
         """
         Setting Parameter
 
@@ -155,9 +156,9 @@ class RRT:
         plt.plot(self.start.x, self.start.y, "xr")
         plt.plot(self.end.x, self.end.y, "xr")
         plt.axis("equal")
-        plt.axis([-2, 15, -2, 15])
+        plt.axis([self.min_rand, self.max_rand, self.min_rand, self.max_rand])
         plt.grid(True)
-        plt.pause(0.01)
+        plt.pause(0.00001)
 
     @staticmethod
     def plot_circle(x, y, size, color="-b"):  # pragma: no cover
@@ -214,24 +215,25 @@ def main(gx=6.0, gy=10.0):
         (8, 10, 1)
     ]  # [x, y, radius]
     # Set Initial parameters
-    rrt = RRT(start=[0, 0],
+    rrt = RRT(start=[-5, -8],
               goal=[gx, gy],
-              rand_area=[-2, 15],
+              rand_area=[-15.0, 15.0],
               obstacle_list=obstacleList)
+    start = timer()
     path = rrt.planning(animation=show_animation)
+    end = timer()
 
     if path is None:
         print("Cannot find path")
     else:
         print("found path!!")
-
+        print(f"Execution Time: {(end - start)} seconds")
         # Draw final path
-        if show_animation:
-            rrt.draw_graph()
-            plt.plot([x for (x, y) in path], [y for (x, y) in path], '-r')
-            plt.grid(True)
-            plt.pause(0.01)  # Need for Mac
-            plt.show()
+        rrt.draw_graph()
+        plt.plot([x for (x, y) in path], [y for (x, y) in path], '-r')
+        plt.grid(True)
+        plt.pause(0.01)  # Need for Mac
+        plt.show()
 
 
 if __name__ == '__main__':
