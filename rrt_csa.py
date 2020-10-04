@@ -36,7 +36,7 @@ class RRT:
             self.parent = None
 
     def __init__(self, start, goal, obstacle_list, rand_area,
-                 expand_dis=3.0, path_resolution=2.0, goal_sample_rate=5, max_iter=1000):
+                 expand_dis=0.4, path_resolution=0.05, goal_sample_rate=5, max_iter=100000):
         """
         Setting Parameter
 
