@@ -15,6 +15,7 @@ from timeit import default_timer as timer
 
 show_animation = True
 GoalBiased = True
+InflationRadius = 0.8
 
 def EuclideanDistanceOfNodes(start, end):
     return math.sqrt(((end.y-start.y)**2)+((end.x-start.x)**2))
@@ -37,7 +38,7 @@ class RRT:
             self.parent = None
 
     def __init__(self, start, goal, obstacle_list, rand_area,
-                 expand_dis=0.4, path_resolution=0.05, goal_sample_rate=5, max_iter=100000):
+                 expand_dis=0.8, path_resolution=0.2, goal_sample_rate=5, max_iter=100000):
         """
         Setting Parameter
 
@@ -184,7 +185,9 @@ class RRT:
         ax.add_artist(sampling_range_circle)
 
         for (ox, oy, size) in self.obstacle_list:
-            obst_cir = plt.Circle((ox,oy), size, color='b')
+            inflation_cir = plt.Circle((ox,oy), size+ InflationRadius, color='g', alpha=0.25, linewidth=0.0)
+            ax.add_artist(inflation_cir)
+            obst_cir = plt.Circle((ox,oy), size, color='b', alpha=0.8 , linewidth=0.0)
             ax.add_artist(obst_cir)
 
         plt.plot(self.start.x, self.start.y, "xr")
@@ -213,7 +216,7 @@ class RRT:
             dy_list = [oy - y for y in node.path_y]
             d_list = [dx * dx + dy * dy for (dx, dy) in zip(dx_list, dy_list)]
 
-            if min(d_list) <= size ** 2:
+            if min(d_list) <= (size+InflationRadius) ** 2:
                 return False  # collision
 
         return True  # safe
